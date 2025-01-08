@@ -1,7 +1,7 @@
 import './index.css';
-import { initialCards, handleLikeClick, addCard, deleteCard } from './scripts/cards.js';
+import { handleLikeClick, addCard, deleteCard } from './scripts/cards.js';
+import { initialCards } from './scripts/initialCards.js';
 import { openModal, closeModal } from './scripts/modal.js';
-export { nameInput, jobInput };
 
 // Получаем все кнопки открытия и закрытия
 const editButton = document.querySelector('.profile__edit-button');
@@ -11,43 +11,50 @@ const closeButtons = document.querySelectorAll('.popup__close');
 const editPopup = document.querySelector('.popup_type_edit');
 const addPopup = document.querySelector('.popup_type_new-card');
 // Получаем элементы для работы с редактированием
-const formElement = editPopup.querySelector('.popup__form');
-const nameInput = formElement.querySelector('.popup__input_type_name');
-const jobInput = formElement.querySelector('.popup__input_type_description');
+const profileForm = editPopup.querySelector('.popup__form');
+const nameInput = profileForm.querySelector('.popup__input_type_name');
+const jobInput = profileForm.querySelector('.popup__input_type_description');
 // ДАем пользователю возможность добавлять карточки
 const newCardPopup = document.querySelector('.popup_type_new-card');
 const formAddElement = newCardPopup.querySelector('.popup__form');
 const placesList = document.querySelector('.places__list');
+// Работа с изображениями
+const imagePopup = document.querySelector('.popup_type_image');
+const imagePopupImg = imagePopup.querySelector('.popup__image');
+const imageCaption = imagePopup.querySelector('.popup__caption');
 
-function renderCard() {
-  const placesList = document.querySelector('.places__list');
+const profileTitleElement = document.querySelector('.profile__title');
+const profileDescriptionElement = document.querySelector('.profile__description');
+
+function renderCards() {
   initialCards.forEach((cardData) => {
     const card = addCard(cardData, deleteCard, handleImageClick, handleLikeClick);
     placesList.append(card); 
   })
 }; 
-renderCard();
+renderCards();
 // Обработчик события клика по изображению
 function handleImageClick(image) {
-  const imagePopup = document.querySelector('.popup_type_image');
-  const imagePopupImg = imagePopup.querySelector('.popup__image');
-  const imageCaption = imagePopup.querySelector('.popup__caption');
   imagePopupImg.src = image.src; // Устанавливаем источник изображения
   imageCaption.textContent = image.alt; // Устанавливаем подпись
   openModal(imagePopup); // Открываем модальное окно с изображением
 }
 // Добавляем обработчики событий для открытия модальных окон
-editButton.addEventListener('click', () => openModal(editPopup));
+editButton.addEventListener('click', () => {
+  nameInput.value = document.querySelector('.profile__title').textContent;
+  jobInput.value = document.querySelector('.profile__description').textContent;
+  openModal(editPopup);
+});
 addButton.addEventListener('click', () => openModal(addPopup));
 // Обработчик отправки формы для формы РЕДАКТИРОВАНИЯ ПРОФИЛЯ
-formElement.addEventListener('submit', function(evt) {
+profileForm.addEventListener('submit', function(evt) {
   evt.preventDefault(); // Отменяем стандартное поведение формы
-  // Получаем значения из полей ввода
+  // Получаем значения из полей ввода для редактирования
   const nameValue = nameInput.value;
   const jobValue = jobInput.value;
   // Обновляем значения на странице
-  document.querySelector('.profile__title').textContent = nameValue;
-  document.querySelector('.profile__description').textContent = jobValue;
+  profileTitleElement.textContent = nameValue;
+  profileDescriptionElement.textContent = jobValue;
   closeModal(editPopup); // Закрываем попап
 });
 // ДАем пользователю возможность добавлять карточки
@@ -70,6 +77,14 @@ closeButtons.forEach(button => {
   button.addEventListener('click', () => {
       const popup = button.closest('.popup');
       closeModal(popup);
+  });
+});
+// Закрытие при клике вне содержимого модального окна
+document.querySelectorAll('.popup').forEach(popup => {
+  popup.addEventListener('click', (event) => {
+      if (event.target === popup) {
+          closeModal(popup);
+      }
   });
 });
 
