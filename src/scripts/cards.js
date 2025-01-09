@@ -20,7 +20,7 @@ function addCard (cardData, deleteCard, handleImageClick, handleLikeClick) {
 function deleteCard(cardElement) {
   cardElement.remove();
 };
-// Обработчик события клика по изображению
+// Обработчик события клика по лайку
 function handleLikeClick(likeButton) {
   likeButton.classList.toggle('card__like-button_is-active');
 }

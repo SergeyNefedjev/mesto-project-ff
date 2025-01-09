@@ -36,13 +36,14 @@ renderCards();
 // Обработчик события клика по изображению
 function handleImageClick(image) {
   imagePopupImg.src = image.src; // Устанавливаем источник изображения
+  imagePopupImg.alt = image.alt; // Добавляем альтернативное описание
   imageCaption.textContent = image.alt; // Устанавливаем подпись
   openModal(imagePopup); // Открываем модальное окно с изображением
 }
 // Добавляем обработчики событий для открытия модальных окон
 editButton.addEventListener('click', () => {
-  nameInput.value = document.querySelector('.profile__title').textContent;
-  jobInput.value = document.querySelector('.profile__description').textContent;
+  nameInput.value = profileTitleElement.textContent;
+  jobInput.value = profileDescriptionElement.textContent;
   openModal(editPopup);
 });
 addButton.addEventListener('click', () => openModal(addPopup));
