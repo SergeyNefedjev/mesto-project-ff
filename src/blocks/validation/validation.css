@@ -1,0 +1,17 @@
+.form__input_type_error {
+  border-bottom-color: red;
+} 
+
+.form__input-error {
+  color: red;
+  opacity: 0;
+}
+
+.form__input-error_active{
+  opacity: 1;
+}
+.button_inactive {
+  color: #B8B8B8;
+  background: #EDEDED;
+  pointer-events: none;
+}

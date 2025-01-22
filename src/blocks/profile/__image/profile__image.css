@@ -1,4 +1,6 @@
 .profile__image {
+  position: relative;
+  z-index: 0;
   width: 120px;
   height: 120px;
   -webkit-border-radius: 50%;
@@ -7,6 +9,38 @@
   background-size: cover;
   background-position: center;
   margin: 0 29px 0 0;
+}
+
+.avatar__edit-icon{
+  position: absolute;
+  top: 47px;
+  left: 47px;
+  display: none; /* Скрываем по умолчанию */
+}
+
+.overlay {
+  position: absolute;
+  background: black;
+  opacity: 0.8;
+  width: 100%;
+  height: 100%;
+  z-index: -1;
+  display: none;
+}
+
+.profile__image:focus .avatar__edit-icon,
+.profile__image:hover .avatar__edit-icon {
+  display: block;/* Показываем при фокусе или наведении */
+}
+
+.profile__image:focus .overlay,
+.profile__image:hover .overlay {
+  display: block;/* Показываем при фокусе или наведении */
+}
+
+.profile__image:focus, 
+.profile__image:hover  {
+  cursor: pointer;
 }
 
 @media screen and (max-width: 740px) {

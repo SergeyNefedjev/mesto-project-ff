@@ -1,4 +1,3 @@
-// Функция для открытия модального окна
 function openModal(modal) {
   modal.classList.add('popup_is-opened');// Добавляем класс открытия
   document.addEventListener('keydown', handleEscClose); // Добавляем обработчик при открытии

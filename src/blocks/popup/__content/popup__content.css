@@ -9,6 +9,14 @@
   padding: 34px 36px;
 }
 
+.popup__confirmation {
+  min-height: 181px;
+}
+
+.popup__avatar{
+  min-height: 272px;
+}
+
 @media screen and (max-width: 568px) {
   .popup__content {
     width: 100%;
