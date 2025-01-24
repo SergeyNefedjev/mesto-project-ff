@@ -1,23 +1,27 @@
 import './index.css';
 import { addCard, deleteCard } from './scripts/cards.js';
 import { openModal, closeModal } from './scripts/modal.js';
-import { enableValidation, clearValidation, checkInputValidity } from './scripts/validation.js';
+import { enableValidation, clearValidation } from './scripts/validation.js';
 import { getInitialCards, getUserData, updateUserData, addNewCard, addLike, deleteLike, updateAvatar } from './scripts/api.js';
+
 // Получаем все кнопки открытия и закрытия
 const editButton = document.querySelector('.profile__edit-button');
 const addButton = document.querySelector('.profile__add-button');
 const closeButtons = document.querySelectorAll('.popup__close');
+
 // Получаем сами модальные окна
 const editPopup = document.querySelector('.popup_type_edit');
 const addPopup = document.querySelector('.popup_type_new-card');
+
 // Получаем элементы для работы с редактированием
 const profileForm = editPopup.querySelector('.popup__form');
 const nameInput = profileForm.querySelector('.popup__input_type_name');
 const jobInput = profileForm.querySelector('.popup__input_type_description');
+
 // ДАем пользователю возможность добавлять карточки
-const newCardPopup = document.querySelector('.popup_type_new-card');
-const formAddElement = newCardPopup.querySelector('.popup__form');
+const formAddElement = addPopup.querySelector('.popup__form');
 const placesList = document.querySelector('.places__list');
+
 // Работа с изображениями
 const imagePopup = document.querySelector('.popup_type_image');
 const imagePopupImg = imagePopup.querySelector('.popup__image');
@@ -25,10 +29,12 @@ const imageCaption = imagePopup.querySelector('.popup__caption');
 const profileTitleElement = document.querySelector('.profile__title');
 const profileDescriptionElement = document.querySelector('.profile__description');
 const profileAvatarElement = document.querySelector('.profile__image');
+
 // Получаем элементы для работы с обновлением аватара
 const avatarPopup = document.querySelector('.popup_type_avatar');
 const avatarForm = avatarPopup.querySelector('.popup__form');
 const avatarInput = avatarForm.querySelector('.popup__input_type_avatar');
+
 const config = {
   formSelector: '.popup__form',
   inputSelector: '.popup__input',
@@ -37,6 +43,18 @@ const config = {
   inputErrorClass: 'form__input_type_error',
   errorClass: 'form__input-error_active'
 };
+
+// Утилитарная функция для изменения состояния кнопки загрузки
+function renderLoading(isLoading, button) {
+  if (isLoading) {
+    button.textContent = 'Сохранение...';
+    button.disabled = true; // Отключаем кнопку
+  } else {
+    button.textContent = 'Сохранить';
+    button.disabled = false; // Включаем кнопку
+  }
+}
+
 // Обработчик события клика по изображению
 function handleImageClick(image) {
   imagePopupImg.src = image.src; // Устанавливаем источник изображения
@@ -44,6 +62,7 @@ function handleImageClick(image) {
   imageCaption.textContent = image.alt; // Устанавливаем подпись
   openModal(imagePopup); // Открываем модальное окно с изображением
 }
+
 // Добавляем обработчики событий для открытия модальных окон
 editButton.addEventListener('click', () => {
   nameInput.value = profileTitleElement.textContent;
@@ -51,19 +70,21 @@ editButton.addEventListener('click', () => {
   clearValidation(profileForm, config);
   openModal(editPopup);
 });
+
 addButton.addEventListener('click', () => {
   clearValidation(formAddElement, config);
   openModal(addPopup);
 });
+
 // Обработчик отправки формы для формы РЕДАКТИРОВАНИЯ ПРОФИЛЯ
 profileForm.addEventListener('submit', function(evt) {
   evt.preventDefault(); // Отменяем стандартное поведение формы
   const nameValue = nameInput.value;
   const jobValue = jobInput.value;
-  // Изменяем текст кнопки на "Сохранение..."
+  
   const saveButton = profileForm.querySelector('.popup__button');
-  saveButton.textContent = 'Сохранение...';
-  saveButton.disabled = true; // Отключаем кнопку
+  renderLoading(true, saveButton); // Устанавливаем состояние загрузки
+
   updateUserData(nameValue, jobValue)
     .then((updatedUserData) => {
       profileTitleElement.textContent = updatedUserData.name;
@@ -75,19 +96,19 @@ profileForm.addEventListener('submit', function(evt) {
       console.error('Ошибка при обновлении данных пользователя:', error);
     })
     .finally(() => {
-      // Восстанавливаем текст кнопки и состояние
-      saveButton.textContent = 'Сохранить';
-      saveButton.disabled = false; // Включаем кнопку
+      renderLoading(false, saveButton); // Восстанавливаем состояние кнопки
     });
 });
+
 // ДАем пользователю возможность добавлять карточки
 formAddElement.addEventListener('submit', function(evt) {
   evt.preventDefault(); // Отменяем стандартное поведение формы
   const placeName = formAddElement.elements['place-name'].value;
   const imageLink = formAddElement.elements['link'].value;
+
   const addButton = formAddElement.querySelector('.popup__button');
-  addButton.textContent = 'Сохранение...';
-  addButton.disabled = true; // Отключаем кнопку
+  renderLoading(true, addButton); // Устанавливаем состояние загрузки
+
   addNewCard(placeName, imageLink)
     .then((newCardData) => {
       const newCard = addCard(newCardData, deleteCard, handleImageClick,
@@ -103,10 +124,10 @@ formAddElement.addEventListener('submit', function(evt) {
       console.error('Ошибка при добавлении новой карточки:', error);
     })
     .finally(() => {
-      addButton.textContent = 'Сохранить';
-      addButton.disabled = false; // Включаем кнопку
+      renderLoading(false, addButton); // Восстанавливаем состояние кнопки
     });
 });
+
 // Добавляем обработчики событий для закрытия модальных окон
 closeButtons.forEach(button => {
   button.addEventListener('click', () => {
@@ -114,6 +135,7 @@ closeButtons.forEach(button => {
       closeModal(popup);
   });
 });
+
 // Закрытие при клике вне содержимого модального окна
 document.querySelectorAll('.popup').forEach(popup => {
   popup.addEventListener('click', (event) => {
@@ -122,7 +144,7 @@ document.querySelectorAll('.popup').forEach(popup => {
       }
   });
 });
-enableValidation(config);
+
 Promise.all([getUserData(), getInitialCards()])
   .then(([userData, cards]) => {
     // Получаем ID текущего пользователя
@@ -147,19 +169,23 @@ Promise.all([getUserData(), getInitialCards()])
   .catch((error) => {
     console.error('Ошибка:', error);
   });
+
 // Обработчик события клика по изображению профиля
 profileAvatarElement.addEventListener('click', () => {
   clearValidation(avatarForm, config);
   openModal(avatarPopup);
 });
+
 // Обработчик отправки формы для обновления аватара
 avatarForm.addEventListener('submit', function(evt) {
   evt.preventDefault(); // Отменяем стандартное поведение формы
   const avatarValue = avatarInput.value;
-  if (avatarForm.checkValidity()) { // Проверяем валидность формы
+   // Сначала очищаем валидацию перед отправкой
+  clearValidation(avatarForm, config);
+  // Проверяем валидность формы перед отправкой
+  if (avatarForm.checkValidity()) { 
     const saveButton = avatarForm.querySelector('.popup__button');
-    saveButton.textContent = 'Сохранение...';
-    saveButton.disabled = true; // Отключаем кнопку
+    renderLoading(true, saveButton); // Устанавливаем состояние загрузки
     updateAvatar(avatarValue)
       .then((updatedUserData) => {
         profileAvatarElement.style.backgroundImage = `url(${updatedUserData.avatar})`; // Обновляем аватар
@@ -169,13 +195,9 @@ avatarForm.addEventListener('submit', function(evt) {
         console.error('Ошибка при обновлении аватара:', error);
       })
       .finally(() => {
-        saveButton.textContent = 'Сохранить';
-        saveButton.disabled = false; // Включаем кнопку
+        renderLoading(false, saveButton); // Восстанавливаем состояние кнопки
       });
-  } else {
-    checkInputValidity(avatarForm, avatarInput, config.inputErrorClass, config.errorClass); // Проверяем валидность поля
   }
 });
-avatarInput.addEventListener('input', () => {
-  checkInputValidity(avatarForm, avatarInput, config.inputErrorClass, config.errorClass);
-});
+
+enableValidation(config);
