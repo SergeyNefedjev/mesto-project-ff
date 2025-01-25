@@ -29,7 +29,7 @@ const hasInvalidInput = (inputList) => {
   return inputList.some((inputElement) => !inputElement.validity.valid);
 };
 
-const toggleButtonState = (inputList, buttonElement, inactiveButtonClass) => {
+export const toggleButtonState = (inputList, buttonElement, inactiveButtonClass) => {
   if (hasInvalidInput(inputList)) {
     buttonElement.classList.add(inactiveButtonClass);
     buttonElement.disabled = true; // Устанавливаем disabled
@@ -75,10 +75,13 @@ export const enableValidation = (config) => {
 export const clearValidation = (formElement, config) => {
   const inputList = Array.from(formElement.querySelectorAll(config.inputSelector));
   const buttonElement = formElement.querySelector(config.submitButtonSelector);
+  // Скрываем ошибки валидации
   inputList.forEach((inputElement) => {
     hideError(formElement, inputElement, config.inputErrorClass, config.errorClass);
   });
-  buttonElement.classList.add(config.inactiveButtonClass);
+  // Обновляем состояние кнопки
+  toggleButtonState(inputList, buttonElement, config.inactiveButtonClass);
 };
+
 
 

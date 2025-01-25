@@ -23,7 +23,7 @@ function addCard(cardData, deleteCard, handleImageClick, addLikeFunc, deleteLike
     deleteButton.style.display = 'none'; // Скрываем кнопку удаления
   }
   // Проверяем, есть ли у текущего пользователя лайк на этой карточке
-  const userId = localStorage.getItem('userId');; // Замените на реальный ID пользователя
+  const userId = localStorage.getItem('userId'); // Замените на реальный ID пользователя
   let isLiked = cardData.likes.some(user => user._id === userId);
   if (isLiked) {
     likeButton.classList.add('card__like-button_is-active'); // Добавляем класс для активного лайка

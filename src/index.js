@@ -1,7 +1,7 @@
 import './index.css';
 import { addCard, deleteCard } from './scripts/cards.js';
 import { openModal, closeModal } from './scripts/modal.js';
-import { enableValidation, clearValidation } from './scripts/validation.js';
+import { enableValidation, clearValidation, toggleButtonState } from './scripts/validation.js';
 import { getInitialCards, getUserData, updateUserData, addNewCard, addLike, deleteLike, updateAvatar } from './scripts/api.js';
 
 // Получаем все кнопки открытия и закрытия
@@ -34,6 +34,7 @@ const profileAvatarElement = document.querySelector('.profile__image');
 const avatarPopup = document.querySelector('.popup_type_avatar');
 const avatarForm = avatarPopup.querySelector('.popup__form');
 const avatarInput = avatarForm.querySelector('.popup__input_type_avatar');
+let currentUserId;
 
 const config = {
   formSelector: '.popup__form',
@@ -44,14 +45,12 @@ const config = {
   errorClass: 'form__input-error_active'
 };
 
-// Утилитарная функция для изменения состояния кнопки загрузки
+//Функция для изменения состояния кнопки загрузки
 function renderLoading(isLoading, button) {
   if (isLoading) {
     button.textContent = 'Сохранение...';
-    button.disabled = true; // Отключаем кнопку
   } else {
     button.textContent = 'Сохранить';
-    button.disabled = false; // Включаем кнопку
   }
 }
 
@@ -63,16 +62,15 @@ function handleImageClick(image) {
   openModal(imagePopup); // Открываем модальное окно с изображением
 }
 
-// Добавляем обработчики событий для открытия модальных окон
 editButton.addEventListener('click', () => {
   nameInput.value = profileTitleElement.textContent;
   jobInput.value = profileDescriptionElement.textContent;
-  clearValidation(profileForm, config);
+  clearValidation(profileForm, config); // Очищаем валидацию и обновляем состояние кнопки
   openModal(editPopup);
 });
 
 addButton.addEventListener('click', () => {
-  clearValidation(formAddElement, config);
+  clearValidation(formAddElement, config); // Очищаем валидацию и обновляем состояние кнопки
   openModal(addPopup);
 });
 
@@ -81,10 +79,8 @@ profileForm.addEventListener('submit', function(evt) {
   evt.preventDefault(); // Отменяем стандартное поведение формы
   const nameValue = nameInput.value;
   const jobValue = jobInput.value;
-  
   const saveButton = profileForm.querySelector('.popup__button');
   renderLoading(true, saveButton); // Устанавливаем состояние загрузки
-
   updateUserData(nameValue, jobValue)
     .then((updatedUserData) => {
       profileTitleElement.textContent = updatedUserData.name;
@@ -105,18 +101,16 @@ formAddElement.addEventListener('submit', function(evt) {
   evt.preventDefault(); // Отменяем стандартное поведение формы
   const placeName = formAddElement.elements['place-name'].value;
   const imageLink = formAddElement.elements['link'].value;
-
   const addButton = formAddElement.querySelector('.popup__button');
   renderLoading(true, addButton); // Устанавливаем состояние загрузки
-
   addNewCard(placeName, imageLink)
     .then((newCardData) => {
       const newCard = addCard(newCardData, deleteCard, handleImageClick,
         addLike,
-        deleteLike 
+        deleteLike,
+        currentUserId 
       );
       placesList.prepend(newCard);
-      
       closeModal(addPopup);
       formAddElement.reset(); // Очищаем поля формы
     })
@@ -148,7 +142,7 @@ document.querySelectorAll('.popup').forEach(popup => {
 Promise.all([getUserData(), getInitialCards()])
   .then(([userData, cards]) => {
     // Получаем ID текущего пользователя
-    const currentUserId = userData._id; 
+    currentUserId = userData._id; 
     profileTitleElement.textContent = userData.name;
     profileDescriptionElement.textContent = userData.about;
     profileAvatarElement.style.backgroundImage = `url(${userData.avatar})`; 
@@ -172,7 +166,7 @@ Promise.all([getUserData(), getInitialCards()])
 
 // Обработчик события клика по изображению профиля
 profileAvatarElement.addEventListener('click', () => {
-  clearValidation(avatarForm, config);
+  clearValidation(avatarForm, config); // Очищаем валидацию перед открытием
   openModal(avatarPopup);
 });
 
